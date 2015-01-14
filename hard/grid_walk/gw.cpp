@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include <set>
+#include <vector>
+
 
 inline int sumDigits(int x)
 {
@@ -34,6 +36,10 @@ bool operator<(const pt &a, const pt &b) {
 
 inline bool feasible(const pt &p)
 {
+    /*if (p.x <= 0 || p.y < 0) {
+        return false;
+    }*/
+
     int ax = std::abs(p.x);
     int ay = std::abs(p.y);
 
@@ -71,12 +77,54 @@ void move(std::set<pt> &s, const pt &cur)
     return;
 }
 
+int movec(std::vector<bool> &fg, const pt &cur, const int W, const int H)
+{
+    const int idx = (cur.y + H/2) * W + (cur.x + W/2);
+    if (fg[idx]) {
+        pt u = { cur.x, cur.y + 1 };
+        pt d = { cur.x, cur.y - 1 };
+        pt l = { cur.x - 1, cur.y };
+        pt r = { cur.x + 1, cur.y };
+        int c = 1;
+        fg[idx] = false;
+        c += movec(fg, u, W, H);
+        c += movec(fg, d, W, H);
+        c += movec(fg, l, W, H);
+        c += movec(fg, r, W, H);
+        return c;
+    }
+    return 0;
+}
+
 int main()
 {
+    const int W = 600;
+    const int H = 600;
+    std::vector<bool> fg(W*H, false);
+
+    for (int i = 0; i < H; i++) {
+        for (int j = 0; j < W; j++) {
+            pt p = {j - W/2, i - H/2};
+            if (feasible(p)) {
+                fg[i*W + j] = true;
+            }
+        }
+    }
+
     pt start = { 0, 0 };
+    std::cout << movec(fg, start, W, H) << '\n';
+    /*
     std::set<pt> allmoves;
     allmoves.insert(start);
     move(allmoves, start);
-    std::cout << allmoves.size();
+    std::cout << allmoves.size() << '\n';
+    */
+    /*
+    std::set<pt>::iterator it = allmoves.begin();
+    while (it != allmoves.end()) {
+        const pt &p = *it;
+        std::cout << p.x << ", " << p.y << '\n';
+        it++;
+    }*/
     return 0;
 }
