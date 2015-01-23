@@ -79,7 +79,10 @@ void move(std::set<pt> &s, const pt &cur)
 
 int movec(std::vector<bool> &fg, const pt &cur, const int W, const int H)
 {
-    const int idx = (cur.y + H/2) * W + (cur.x + W/2);
+    if (cur.x < 0 || cur.y < 0) {
+        return 0;
+    }
+    const int idx = (cur.y) * W + (cur.x);
     if (fg[idx]) {
         pt u = { cur.x, cur.y + 1 };
         pt d = { cur.x, cur.y - 1 };
@@ -98,13 +101,14 @@ int movec(std::vector<bool> &fg, const pt &cur, const int W, const int H)
 
 int main()
 {
-    const int W = 600;
-    const int H = 600;
+    const int W = 300;
+    const int H = 300;
     std::vector<bool> fg(W*H, false);
 
     for (int i = 0; i < H; i++) {
         for (int j = 0; j < W; j++) {
-            pt p = {j - W/2, i - H/2};
+            // pt p = {j - W/2, i - H/2};
+            pt p = {j, i};
             if (feasible(p)) {
                 fg[i*W + j] = true;
             }
@@ -112,7 +116,10 @@ int main()
     }
 
     pt start = { 0, 0 };
-    std::cout << movec(fg, start, W, H) << '\n';
+    const int one_quadrant_both_axes = movec(fg, start, W, H);
+    const int one_axis = 299;
+    // one for starting point
+    std::cout << (4 * (one_quadrant_both_axes - one_axis) + 1) << '\n';
     /*
     std::set<pt> allmoves;
     allmoves.insert(start);
