@@ -12,28 +12,19 @@ int main(int argc, char **argv)
     }
 
     std::ifstream f(argv[1], std::ios::binary);
+    bool last_was_whitespace = true;
     while (true) { 
-        std::string line;
-        std::getline(f, line);
+        char c;
+        f.get(c);
         if (f.fail()) {
             break;
         }
-        std::istringstream iss(line);
-        int first = 0;
-        while (true) {
-            std::string word;
-            iss >> word;
-            if (iss.fail()) {
-                break;
-            }
-            word[0] = std::toupper(word[0]);
-            if (first != 0) {
-                std::cout << ' ';
-            }
-            std::cout << word;
-            first++;
+        if (last_was_whitespace) {
+            std::cout << static_cast<char>(std::toupper(c));
+        } else {
+            std::cout << c;
         }
-        std::cout << '\n';
+        last_was_whitespace = std::isspace(c);
     }
     return 0;
 }
