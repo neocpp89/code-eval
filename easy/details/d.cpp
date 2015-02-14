@@ -17,18 +17,28 @@ int main(int argc, char **argv)
         if (f.fail()) {
             break;
         }
-        size_t cmin = line.size();
-        size_t p;
-        do {
-            p = line.find(',');
-            std::string s = line.substr(0, p);
-            size_t nc = s.find('Y') - s.rfind('X') - 1;
-            if (nc < cmin) {
-                cmin = nc;
+        int smin = line.size();
+        size_t last_X = 0;
+        bool consume_until_comma = false;
+        for (size_t i = 0; i < line.size(); i++) {
+            char c = line[i];
+            if (consume_until_comma && c != ',') {
+                continue;
             }
-            line = line.substr(p+1);
-        } while (p != std::string::npos);
-        std::cout << cmin << '\n';
+
+            if (c == ',') {
+                consume_until_comma = false;
+            } else if (c == 'X') {
+                last_X = i;
+            } else if (c == 'Y') {
+                int s = i - last_X - 1;
+                if (s < smin) {
+                    smin = s;
+                }
+                consume_until_comma = true;
+            }
+        }
+        std::cout << smin << '\n';
     }
     return 0;
 }
